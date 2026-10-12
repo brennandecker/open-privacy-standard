@@ -82,7 +82,7 @@ This is an intended product experience, not a demonstration of software currentl
 
 **Current stage: planning and investigation. This repository contains only this README.**
 
-Documentation research has begun. REA tooling has been installed for the investigation, but client-side artifact analysis and authorized runtime verification are incomplete. No working consent engine, ledger, API, SDK, banner, preference center, admin console, or MCP server has been released.
+Documentation research now includes OneTrust and Ketch. REA tooling is installed. A bounded REA attempt inventoried Ketch's published JavaScript loader SDK, but semantic analysis was blocked by the execution environment. Direct SDK source inspection is recorded separately from REA evidence. Authorized runtime verification remains incomplete; no complete reverse-engineered platform or feature-parity result is claimed. No working consent engine, ledger, API, SDK, banner, preference center, admin console, or MCP server has been released.
 
 The first adoption milestone is an independent developer installing OPS, collecting a choice, checking permission, withdrawing the choice, and proving that the application stops the affected processing—with traceable evidence.
 
@@ -147,9 +147,13 @@ The proposed stack is TypeScript, PostgreSQL, a lightweight API service, and a w
 
 The implementation specification must define tenant and subject isolation, authentication boundaries, purpose-version provenance, event ordering, idempotency, expiration, withdrawal propagation, and integration delivery behavior before these become release claims.
 
-## Research approach: OneTrust as the reference
+## Research approach: multiple references, independent design
 
-**Use OneTrust as the reference product, REA as an investigative tool, and build an independent platform from scratch.**
+**Study OneTrust, Ketch, established standards, and relevant open-source projects; use REA where artifact evidence is needed; build an independently designed privacy platform.**
+
+We will compare common requirements with vendor-specific choices, then publish OPS's own contracts and design rationale. Each implementation decision should be tied to a builder need, a standard, observed evidence, or an explicit original design choice. Adding more references is useful only when the comparison informs the work.
+
+OneTrust and Ketch are research references. Their inclusion does not imply affiliation, endorsement, feature parity, or compatibility.
 
 The investigation combines:
 
@@ -165,6 +169,8 @@ Starting references:
 
 - [OneTrust Developer Documentation Index](https://developer.onetrust.com/onetrust/llms.txt)
 - [OneTrust Developer Portal](https://developer.onetrust.com/)
+- [Ketch Documentation and API Reference](https://docs.ketch.com/)
+- [Ketch TypeScript/JavaScript Web API SDK](https://github.com/ketch-sdk/ketch-web-api)
 - [REA: Reverse Engineer Anything](https://github.com/morluto/rea)
 
 ## Standards and integrations
