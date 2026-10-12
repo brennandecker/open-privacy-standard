@@ -12,7 +12,23 @@ Your application needs a way to understand those choices, act on them, and show 
 
 **Free to use. Self-hostable. API-first. Extensible.**
 
-> **Early-stage project:** this repository currently contains the product definition only. The platform has not been implemented or released. The capabilities described below are planned.
+> **Early-stage project:** this repository currently contains the product definition only. The production platform has not been implemented or released. A separate interactive demo is available below; the platform capabilities described here are planned.
+
+## Try the interactive demo
+
+**[Open the OPS demo →](https://demo.openprivacystandard.org/)**
+
+Explore three connected product experiences:
+
+| Experience | Who uses it | Try it |
+| --- | --- | --- |
+| **Cookie consent banner** | Website visitors choosing optional cookies and tracking | [Try the banner](https://demo.openprivacystandard.org/#consent) |
+| **Preference center** | Customers managing email, personalization, and other permissions | [Manage preferences](https://demo.openprivacystandard.org/#preferences) |
+| **Admin console** | Business owners and builders configuring purposes and inspecting evidence | [Open the console](https://demo.openprivacystandard.org/#admin) |
+
+**Try a complete workflow:** grant email permission in the preference center, run a permission check, withdraw permission, and check again. The second check is blocked, and the consent evidence records the change.
+
+The demo uses synthetic data and browser-local storage. It is a working interaction prototype, not the production platform. The hosted API, SDK, authenticated customer accounts, integrations, and production ledger remain planned. The demo and marketing website are maintained separately from this product repository.
 
 ## Who this is for
 
@@ -246,5 +262,6 @@ Dependencies and reference projects require release-specific license review. Lin
 Initiated by Brennan Decker.
 
 - Website: https://openprivacystandard.org/
+- Interactive demo: https://demo.openprivacystandard.org/
 - LinkedIn: https://www.linkedin.com/in/brennandecker
 - X: https://x.com/brennan_decker
