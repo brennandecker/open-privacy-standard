@@ -2,123 +2,160 @@
 
 **Build what matters. Privacy comes standard.**
 
-Open Privacy Standard (OPS) is an open-source project that helps builders understand and implement responsible data handling, privacy, and security.
+**Privacy infrastructure for every builder.**
 
-We are building for first-time developers, people building with AI, and business owners having applications built for them. You should not need to know the names of privacy laws—or become a privacy engineer—to find a sound starting point.
+Open Privacy Standard (OPS) is an independent, open-source privacy platform being designed to make enterprise-class privacy capabilities accessible to developers, first-time builders, people building with AI, and business owners commissioning applications.
 
-## Product status
+Free to use. Self-hostable. API-first. Extensible.
 
-**This repository currently contains the product definition only.** The regulatory knowledge base, guidance API, MCP server, privacy engine, SDKs, and conformance tests have not been implemented or released.
+Our starting point is **consent and preference management**: a reusable foundation for recording people's choices, enforcing them across applications and integrations, and retaining evidence of what was agreed.
 
-The public website is maintained separately. Website code is not part of this repository.
+## Current status
 
-## What we are building
+**Planning and investigation. This repository currently contains only this README.**
 
-OPS combines three foundations:
+Documentation research has begun. REA tooling has been installed for the investigation, but client-side artifact analysis and authorized runtime verification are incomplete. No working consent engine, ledger, API, SDK, banner, preference center, admin console, or MCP server has been released.
 
-1. **Understand the responsibilities.** Source-backed, plain-language guidance helps people discover privacy questions they may not know to ask.
-2. **Bring that guidance into the build.** An API and MCP server give coding agents and developer tools access to the same versioned regulatory knowledge and implementation guidance.
-3. **Make responsible behavior reusable.** Open specifications, a self-hostable reference implementation, SDKs, and public tests help applications handle permissions, preferences, and personal information consistently.
+The public website is maintained separately. This repository is for the actual OPS platform, specifications, SDKs, and tests as they are developed.
 
-The goal is to democratize these foundations for builders. The project is independent of any commercial privacy platform.
+## The first release: consent and preferences
 
-## 1. Regulatory knowledge base and guidance API
+The first proposed release is a self-hostable TypeScript platform with a PostgreSQL consent ledger, developer APIs and SDK, configurable consent experiences, and integration hooks.
 
-A maintained, structured knowledge base will connect official legislation and regulator guidance to practical application scenarios.
-
-Relevant context includes:
-
-- Where the business operates and where its users are.
-- The information collected, its sources, and the purposes for using it.
-- Age groups, biometric processing, sensitive information, and downstream providers.
-- Business scale, activities, roles, thresholds, exemptions, and other applicability conditions.
-
-A country or state alone is not enough to establish whether a law applies.
-
-Each regulatory record should identify its jurisdiction, official sources, relevant provisions, legislative and operative status, effective dates, source-check date, review status, version history, and coverage limitations. Legal requirements, regulator guidance, and engineering recommendations must remain distinguishable.
-
-Outputs should explain candidate rules, why they may matter, missing facts, and useful next steps. Unknown facts must remain unknown; they must not silently become exemptions.
-
-## 2. OPS MCP server
-
-The MCP server is a core product deliverable. It will let an AI coding assistant consult OPS while helping someone build an application.
-
-Proposed capabilities:
-
-| Capability | Intended result |
+| Component | Intended capability |
 | --- | --- |
-| Discover relevant rules | Candidate rules matched to application context, with reasons and unanswered questions |
-| Retrieve a rule | Versioned explanation, official sources, operative dates, review status, and limitations |
-| Generate an implementation checklist | Concrete tasks grounded in the selected findings, with legal requirements separated from engineering recommendations |
-| Retrieve implementation guidance | Patterns, examples, and verification steps tied to the open specification and reference implementation |
+| Consent engine and policy evaluator | Define purposes and evaluate whether a requested use is permitted under configured policy |
+| Consent ledger | Record grants, refusals, withdrawals, preference changes, purpose and policy versions, timestamps, sources, and relevant evidence |
+| REST API and JavaScript SDK | Collect choices, retrieve preferences, check permissions, and retrieve receipts |
+| Web consent manager | Configurable banner and preference dialog, purpose categories, consent persistence, withdrawal, and tracker gating |
+| Universal preference center | Let authenticated users manage email, SMS, personalization, and data-sharing choices through one configurable experience |
+| Admin console | Manage purposes, notices, versions, collection configurations, regional settings, and integrations |
+| Webhooks and adapters | Propagate changes into applications, marketing tools, and downstream systems; evaluate Google Tag Manager as an initial integration |
+| Self-hosting and verification | Docker Compose, example applications, documentation, and tests for isolation, evidence, and withdrawal enforcement |
 
-The web-facing guidance API and MCP interface should share one knowledge base. Answers must carry source provenance and freshness information.
+These are planned capabilities, not claims about software currently available.
 
-The service should work with synthetic descriptions and structural application context. Uploading customer records should not be required to ask a privacy question.
+## Consent is a shared primitive
 
-## 3. Open privacy specification and reference implementation
+Consent should be usable across a website, mobile app, CRM, marketing platform, API, and AI application.
 
-OPS will publish shared contracts and original, reusable implementations for responsible data handling.
+A common permission service should be able to answer questions such as:
 
-The first proposed software scope is **consent and preference management**:
+- May this application send a marketing email for this purpose?
+- Has this person agreed to personalization?
+- Has permission been withdrawn?
+- Which purpose and policy version did the choice refer to?
+- What evidence supports the current decision?
+- Can a future AI integration use a particular category of information for its declared purpose?
 
-- Define purposes and the notices associated with them.
-- Record grants, refusals, withdrawals, and preference changes.
-- Read the effective state of a person's choices.
-- Evaluate a requested use against configured policies.
-- Generate appropriately minimized receipts and decision evidence.
-- Propagate changes to integrations so applications can enforce them.
-- Verify behavior through public conformance tests.
+The ledger preserves history; an effective-state projection supports permission checks. Applications and integrations must enforce those decisions at the point of use. Recording a receipt alone does not prevent processing.
 
-A receipt is evidence, not enforcement. Applications must honor decisions where information is actually accessed or used.
+Consent is one part of responsible data handling. The platform must distinguish consent-dependent uses from other policy and legal-basis questions.
 
-Permissions and access, minimization, retention, deletion, data-rights workflows, and AI-specific data permissions are expansion areas. They are not claims about an available first release.
+## Proposed architecture
 
-## Builder experience
+**Developer SDKs → Privacy API and policy engine → PostgreSQL**
 
-A business owner should be able to describe an application in ordinary language and understand what needs investigation. Their developer or coding agent should be able to turn the same findings into implementation work.
+**Privacy API → Webhooks and integration adapters → Connected applications**
 
-For example:
+Modular experiences will sit on that shared foundation:
 
-> I am building a booking app that stores customer contact details and sends appointment reminders. What should my builder check, and what should the application support?
+- Web consent manager
+- Universal preference center
+- Administrative console
+- Later: data-subject request portal and AI policy gateway
 
-OPS should explain the relevant questions, link to the underlying sources, distinguish unresolved legal applicability from practical safeguards, and provide reusable implementation patterns as they become available.
+The proposed stack is TypeScript, PostgreSQL, a lightweight API service, and a web administrative interface. Docker Compose should provide a straightforward self-hosting path. React and framework-specific SDKs can follow the initial JavaScript SDK; mobile support comes later.
 
-## Delivery sequence
+The implementation specification must define tenant and subject isolation, authentication boundaries, purpose-version provenance, event ordering, idempotency, expiration, withdrawal propagation, and integration delivery behavior before these become release claims.
 
-1. Define a narrow initial scope and the regulatory record format.
-2. Build and review a small knowledge base around common application patterns.
-3. Implement the guidance API and MCP server.
-4. Test explanations with first-time builders and business owners.
-5. Publish the initial consent and preference contracts.
-6. Build the self-hostable reference implementation and TypeScript SDK.
-7. Publish conformance tests and real integration examples.
-8. Expand coverage based on reviewed evidence and demonstrated usefulness.
+## Research approach: OneTrust as the reference
 
-Each release must clearly state what is implemented, what was reviewed, which jurisdictions and scenarios are covered, and what remains unresolved.
+**Use OneTrust as the reference product, REA as an investigative tool, and build an independent platform from scratch.**
 
-## Principles
+The investigation combines:
 
-- **Accessible to beginners.** Explain unfamiliar terms and connect them to recognizable application behavior.
-- **Open and independently built.** Publish original code, contracts, reasoning, and tests. Research may use public documentation and authorized observations; proprietary code and protected assets are not project inputs.
-- **Trust through evidence.** Preserve sources, versions, review status, and correction history.
-- **Privacy by default.** Minimize inputs and avoid unnecessary personal information.
-- **Interoperability and self-hosting.** Keep builders free to inspect, adapt, and operate the implementation.
-- **Honest limits.** No automatic compliance certification, blanket legal conclusions, or promises that installing a tool removes responsibility.
+1. **Published interfaces:** official API and SDK documentation.
+2. **Authorized observations:** consent, preference, and integration behavior in approved test environments.
+3. **REA artifact analysis:** evidence from legally accessible client-side implementations.
 
-## Community and governance
+Findings will distinguish documented behavior, runtime observations, static observations, inferred design, and unresolved questions. Our implementation will use original code and independently designed interfaces.
 
-Builders and business owners help identify where responsible data handling is confusing. Privacy and security practitioners help make the guidance and implementations sound.
+The investigation should produce a capability map, data contracts, sequence diagrams, black-box test cases, and an evidence-backed implementation specification. Public documentation is useful evidence; it is not proof of runtime behavior or feature parity.
 
-Regulatory corrections should include official sources and explain the affected scope. Contributions should use synthetic examples rather than personal records.
+Starting references:
 
-OPS is a proposed initiative. Recognition as an interoperable standard must be earned through useful implementations, transparent governance, independent review, and community adoption.
+- [OneTrust Developer Documentation Index](https://developer.onetrust.com/onetrust/llms.txt)
+- [OneTrust Developer Portal](https://developer.onetrust.com/)
+- [REA: Reverse Engineer Anything](https://github.com/morluto/rea)
+
+## Standards and integrations
+
+Support for the following must be explicitly scoped, implemented, and tested:
+
+- Global Privacy Control (GPC)
+- Google Consent Mode
+- IAB Transparency & Consent Framework (TCF)
+
+Interoperability support, certification, and formal compliance validation are separate deliverables. None is currently claimed.
+
+We will also evaluate existing open-source consent interfaces such as Klaro and CookieConsent for patterns, developer ergonomics, and license compatibility.
+
+## Supporting module: regulatory guidance and MCP
+
+OPS should help builders understand responsibilities they may not know to ask about.
+
+A maintained, source-linked regulatory knowledge base and guidance API will support plain-language explanations, candidate rules, unanswered questions, and implementation checklists. Jurisdiction alone is insufficient: relevant context includes users, data, purposes, age groups, business activities, scale, roles, thresholds, and exemptions.
+
+An MCP server will bring that guidance and implementation knowledge into AI coding tools. It supports the privacy platform; it does not replace the consent engine, ledger, APIs, SDKs, or enforcement integrations.
+
+Guidance must carry official sources, versions, operative dates, source-check dates, review status, and coverage limitations. Unknown facts must remain unknown. The service should not need customer records to evaluate a synthetic application description.
+
+## Long-term platform scope
+
+After a useful consent and preference foundation, the broader mission includes:
+
+| Area | Future scope |
+| --- | --- |
+| Privacy automation | Data-subject requests, privacy assessments, and data mapping |
+| Data-use governance | Policies for collection, processing, retention, and sharing |
+| AI governance | Data permissions, model-use policies, and audit evidence |
+| Third-party management | Vendor registry and risk assessments |
+| Technology risk and compliance | Controls, evidence collection, and workflows |
+
+These are expansion areas, not first-release commitments.
+
+## Delivery plan
+
+1. **Investigation and specification:** complete the bounded consent and preference investigation; define data models, interfaces, state transitions, and black-box tests.
+2. **Core infrastructure:** implement the consent engine, ledger, effective-state projection, REST API, JavaScript SDK, and audit tests.
+3. **Builder experiences:** implement the banner, tracker gating, authenticated preference center, admin console, regional configuration, and initial integrations.
+4. **Self-hostable alpha:** publish Docker Compose distribution, examples, documentation, and security, accessibility, and enforcement test results.
+5. **Guidance and expansion:** develop reviewed regulatory coverage and MCP support, then broaden the platform based on demonstrated usefulness.
+
+The earlier 90-day roadmap is an aggressive planning hypothesis, not a committed delivery date or a production-certification claim.
+
+## First adoption milestone
+
+An independent developer can install OPS, add consent management to an application, record auditable choices, evaluate permission, withdraw a choice, and verify that the application stops the affected processing.
+
+Every important decision should be traceable to the applicable purpose, policy version, and consent evidence.
+
+## Open-source principles
+
+- Keep the core services, SDKs, reference interfaces, APIs, and tests open.
+- Make the platform understandable to first-time builders and business owners.
+- Support self-hosting and interoperable interfaces.
+- Minimize collected data and make retention and access explicit.
+- Preserve source provenance and distinguish evidence from inference.
+- Publish limitations, corrections, and release verification.
+- Earn adoption as an open standard through transparent governance and community participation.
 
 ## Licensing
 
-The intended license for the software implementation is **Apache-2.0**, supporting commercial reuse and explicit contributor patent licensing under its terms. The license file and required notices will accompany the first code release.
+The intended software license is **Apache-2.0**. The full license and required notices will accompany the first code release.
 
-Linked legislation, regulator guidance, and third-party material retain their original status and terms.
+Dependencies and reference projects require release-specific license review. Linked legislation, documentation, and third-party material retain their original status and terms.
 
 ## Project
 
