@@ -2,21 +2,99 @@
 
 **Build what matters. Privacy comes standard.**
 
-**Privacy infrastructure for every builder.**
+## Your app collects people's information. Can it respect their choices?
 
-Open Privacy Standard (OPS) is an independent, open-source privacy platform being designed to make enterprise-class privacy capabilities accessible to developers, first-time builders, people building with AI, and business owners commissioning applications.
+A customer signs up. A parent creates a profile for their child. Someone books an appointment, changes a preference, or asks you to stop using their information.
 
-Free to use. Self-hostable. API-first. Extensible.
+Your application needs a way to understand those choices, act on them, and show what happened.
 
-Our starting point is **consent and preference management**: a reusable foundation for recording people's choices, enforcing them across applications and integrations, and retaining evidence of what was agreed.
+**Open Privacy Standard (OPS) is an independent, open-source privacy platform being designed to make that foundation accessible to every builder.** We are starting with consent and preference management: shared infrastructure for recording choices, checking permissions, propagating changes, and retaining evidence.
 
-## Current status
+**Free to use. Self-hostable. API-first. Extensible.**
 
-**Planning and investigation. This repository currently contains only this README.**
+> **Early-stage project:** this repository currently contains the product definition only. The platform has not been implemented or released. The capabilities described below are planned.
+
+## Who this is for
+
+- **First-time builders** who know what they want to create but may not know what responsible data handling requires.
+- **Developers and people building with AI** who need reusable privacy infrastructure inside their applications.
+- **Business owners commissioning apps** who need to understand what their builder should implement and how to verify it.
+- **Small teams** that need consent and preference management without building the entire foundation themselves.
+
+You should not need to know the names of privacy laws—or become a privacy engineer—to find a sound starting point.
+
+## The problem: collecting a choice is only the beginning
+
+A checkbox can collect an answer. A privacy policy can explain an intention. Neither, by itself, makes every connected system respect that answer.
+
+A customer's preference may need to travel through a website, database, CRM, marketing platform, API, and eventually an AI integration. It can change over time. Different purposes can have different permissions. The application must know which choice is effective now and what evidence supports it.
+
+Building that consistently means handling identity, purpose definitions, versions, timestamps, withdrawals, policy checks, integrations, and audit records. Those responsibilities are easy to miss when a team is focused on getting an app working.
+
+**OPS exists to give builders a shared foundation for this work.**
+
+## Why it matters
+
+When choices are recorded but not enforced, people lose meaningful control over how their information is used. A customer can unsubscribe and still receive marketing. A preference change can get lost between systems. A business can struggle to explain why an application used someone's data.
+
+These failures can harm people, undermine customer trust, create operational rework, and—depending on applicable requirements and the circumstances—create legal exposure.
+
+The risk is not limited to whether your app has a consent banner. It includes what happens to the information after someone interacts with it.
+
+| A recognizable failure | The planned OPS capability |
+| --- | --- |
+| A customer withdraws marketing consent, but a connected system keeps using the old choice | Effective permission checks and change propagation, with integration tests for withdrawal |
+| An older event overwrites a newer preference | Explicit ordering rules and a deterministic current-state projection |
+| A team cannot explain which notice or purpose a person agreed to | Version-linked consent history and receipts |
+| Each app implements preferences differently | Shared APIs, SDKs, contracts, and conformance tests |
+
+## How OPS will help
+
+OPS will connect three things that belong together:
+
+1. **The person's choice.** Configurable consent experiences and an authenticated preference center.
+2. **The application's decision.** A shared consent engine, policy evaluator, API, and SDK.
+3. **The evidence.** A PostgreSQL consent ledger linking changes and decisions to their purposes, versions, timestamps, and sources.
+
+Webhooks and adapters will help connected systems receive changes. Public tests and examples will help builders verify that those systems actually honor them.
+
+**Recording a receipt is not enforcement.** Applications and integrations must check and respect the relevant decision where the information is used. OPS is intended to make that behavior reusable and verifiable.
+
+Plain-language regulatory guidance and an MCP server will support builders and their coding tools alongside that operational foundation.
+
+## A concrete example: booking without unwanted marketing
+
+A customer books an appointment and declines marketing emails.
+
+In the intended OPS workflow:
+
+1. The application records the marketing choice against a defined purpose and notice version.
+2. OPS records the event and makes the effective preference available through the API.
+3. The marketing integration checks permission before using the customer's information for that purpose.
+4. If the customer later grants or withdraws permission, the effective state changes and integrations receive the update.
+5. The application can retrieve the evidence behind the decision and test that withdrawal stops the affected processing.
+
+Booking-related processing is evaluated separately under its configured policy. Consent for one purpose must not silently become permission for another.
+
+This is an intended product experience, not a demonstration of software currently shipped.
+
+## What is available today—and what comes next
+
+**Current stage: planning and investigation. This repository contains only this README.**
 
 Documentation research has begun. REA tooling has been installed for the investigation, but client-side artifact analysis and authorized runtime verification are incomplete. No working consent engine, ledger, API, SDK, banner, preference center, admin console, or MCP server has been released.
 
+The first adoption milestone is an independent developer installing OPS, collecting a choice, checking permission, withdrawing the choice, and proving that the application stops the affected processing—with traceable evidence.
+
 The public website is maintained separately. This repository is for the actual OPS platform, specifications, SDKs, and tests as they are developed.
+
+## Help shape the foundation
+
+[Open an issue](https://github.com/brennandecker/open-privacy-standard/issues) with a real application scenario, a question you could not answer, or a behavior the platform should support. You do not need privacy expertise or code to contribute a useful question.
+
+Describe the data, the purpose, the person's choice, and what the application should do next. Use synthetic examples rather than customer records.
+
+The sections below explain the proposed release, architecture, investigation approach, standards, roadmap, and licensing in detail.
 
 ## The first release: consent and preferences
 
