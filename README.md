@@ -2,17 +2,74 @@
 
 **Build what matters. Privacy comes standard.**
 
-## Your app collects people's information. Can it respect their choices?
+## Your app works. Do its privacy promises?
 
-A customer signs up. A parent creates a profile for their child. Someone books an appointment, changes a preference, or asks you to stop using their information.
+A visitor lands from an Instagram ad. A pixel reports the visit. Analytics measures the session. A discount popup collects an email. A marketing tool sends tomorrow’s offer.
 
-Your application needs a way to understand those choices, act on them, and show what happened.
+To your customer, it is one experience. Behind the screen, their information moves through several systems. **Can you explain those uses—and prove that changing a choice changes what those systems do?**
 
-**Open Privacy Standard (OPS) is an independent, open-source privacy platform being designed to make that foundation accessible to every builder.** We are starting with consent and preference management: shared infrastructure for recording choices, checking permissions, propagating changes, and retaining evidence.
+OPS is an independent, open-source privacy platform being designed for builders who need that foundation. We start with consent and preferences, then extend into data lifecycle and governance.
 
-**Free to use. Self-hostable. API-first. Extensible.**
+**Our intended foundation: free to use, self-hostable, API-first, and extensible.** Intended software license: Apache-2.0.
 
-> **Early-stage project:** this repository currently contains the product definition only. The production platform has not been implemented or released. A separate interactive demo is available below; the platform capabilities described here are planned.
+> **Available now:** educational resources, a nine-question assessment, integration-level definitions, illustrative case studies, and a separate browser-local demo. **Not yet available:** installable production OPS packages, APIs, SDKs, connectors, or MCP. This repository remains README-only.
+
+**[Find your starting point](https://openprivacystandard.org/assessment/)** · **[Try the demo](https://demo.openprivacystandard.org/)** · **[Understand privacy architecture](https://openprivacystandard.org/architecture/)** · **[Help build OPS](https://github.com/brennandecker/open-privacy-standard/issues)**
+
+## Start with your application
+
+You do not need to know the names of privacy laws. The **[“Should I care about privacy?” assessment](https://openprivacystandard.org/assessment/)** asks nine plain-language questions about your app, information, tracking, purposes, connected tools, AI, younger users, locations, and lifecycle needs.
+
+You receive a suggested integration level, the answers behind it, and unresolved questions. Answers stay in the page’s memory. This is an integration recommendation, not a legal compliance determination.
+
+## Three levels of integration
+
+These are cumulative integration packages, not paid plans or compliance certifications. All are intended to remain open source. **None has shipped as a production package.**
+
+| Level | Who it fits | Proposed package | Follow an example |
+| --- | --- | --- | --- |
+| **Tier 1 — Website controls** | A public site with optional analytics or tracking | Consent banner, purpose configuration, script gating, withdrawal, and evidence | [Harbor Workshop: a local furniture website with Google Analytics](https://openprivacystandard.org/case-studies/tier-1/) |
+| **Tier 2 — Connected preferences** | A store or app with customer relationships and connected services | Tier 1 plus authenticated preference center, consent service and ledger, API/SDK, and change propagation | [Tide & Trail: Shopify, Meta conversion tracking, and a Klaviyo discount popup](https://openprivacystandard.org/case-studies/tier-2/) |
+| **Tier 3 — Data lifecycle & governance** | Sensitive information, younger users, complex platforms, or coordinated privacy workflows | Tier 2 plus inventories, access/deletion requests, retention, policy controls, and governance | [ClearPath Practice: family records and optional AI processing](https://openprivacystandard.org/case-studies/tier-3/) |
+
+**[Explore the tiers and complete feature scorecard →](https://openprivacystandard.org/tiers/)**
+
+Each case study works backward from a customer promise: follow the person, follow the information, identify the controls, and define tests that show the promise holds. The businesses are fictional; the vendor tools are real examples. They are not OPS customer deployments or shipped adapters.
+
+## Privacy is an architecture responsibility
+
+A banner can collect a choice. Respecting it requires the rest of the application to cooperate.
+
+| Layer | The builder’s question | Example |
+| --- | --- | --- |
+| **Code** | What collects or uses information—and what stops when permission changes? | A discount form, an analytics script, a scheduled marketing job |
+| **APIs** | Who may request an action, which records may they access, and is the purpose permitted? | Checking email permission before calling a send API |
+| **Database** | What stays, who can access it, and when is it removed? | Customer records, private uploads, consent evidence, logs, and backups |
+| **Sharing** | Which other companies receive information, and how do changes reach them? | Meta, Google Analytics, Klaviyo, a CRM, or an AI provider |
+
+These layers overlap. A browser pixel can send information directly to another company without passing through your database. A server-side sender can keep sharing even after the browser pixel is blocked.
+
+**[Read Understanding Privacy Architecture →](https://openprivacystandard.org/architecture/)**
+
+## Two products, one mission
+
+- **OPS runtime platform:** planned services and components that record choices, evaluate configured policy, propagate changes, and retain minimized evidence. Applications must integrate checks at the actual points of use.
+- **OPS Guide:** a planned knowledge and integration-planning platform that turns app context into source-linked candidate requirements, unresolved facts, module recommendations, implementation tasks, and acceptance tests. **MCP is the coding-agent interface to that product**, alongside its proposed knowledge API.
+
+OPS Guide can help a builder implement any tier. It does not replace runtime enforcement or certify compliance. Neither platform product is released yet.
+
+## What has actually shipped?
+
+| Deliverable | Current state |
+| --- | --- |
+| [Educational website](https://openprivacystandard.org/) | Public: learning pages, initial law summaries, assessment, architecture guide, and case studies |
+| [Integration levels and feature scorecard](https://openprivacystandard.org/tiers/) | Published definitions; prototype behavior graded separately from software releases |
+| [Interactive demo](https://demo.openprivacystandard.org/) | Browser-local prototype with synthetic data and no production vendor connections |
+| Production Tier 1, 2, and 3 packages | **0/3 release grade for each:** no complete installable open-source tier released |
+| OPS Guide / MCP | Planned; no released endpoint |
+| This GitHub repository | Product definition in this README; implementation remains ahead |
+
+The release scale is **0: absent · 1: published source · 2: installable alpha with tests · 3: supported release with documented validation**. Prototype interactions are not production software. Website and demo source are maintained separately from this repository.
 
 ## Try the interactive demo
 
@@ -201,13 +258,13 @@ Interoperability support, certification, and formal compliance validation are se
 
 We will also evaluate existing open-source consent interfaces such as Klaro and CookieConsent for patterns, developer ergonomics, and license compatibility.
 
-## Supporting module: regulatory guidance and MCP
+## OPS Guide: knowledge API and MCP platform product
 
 OPS should help builders understand responsibilities they may not know to ask about.
 
 A maintained, source-linked regulatory knowledge base and guidance API will support plain-language explanations, candidate rules, unanswered questions, and implementation checklists. Jurisdiction alone is insufficient: relevant context includes users, data, purposes, age groups, business activities, scale, roles, thresholds, and exemptions.
 
-An MCP server will bring that guidance and implementation knowledge into AI coding tools. It supports the privacy platform; it does not replace the consent engine, ledger, APIs, SDKs, or enforcement integrations.
+OPS Guide is the separate knowledge and integration-planning product. Its proposed API will serve structured guidance and module contracts; an MCP server will bring those capabilities into AI coding tools. It does not replace the runtime consent engine, ledger, APIs, SDKs, or enforcement integrations. The website assessment currently uses local rules, not this unbuilt service.
 
 Guidance must carry official sources, versions, operative dates, source-check dates, review status, and coverage limitations. Unknown facts must remain unknown. The service should not need customer records to evaluate a synthetic application description.
 
