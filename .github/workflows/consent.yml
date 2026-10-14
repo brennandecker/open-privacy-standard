@@ -1,0 +1,47 @@
+name: Consent foundation
+on:
+  pull_request:
+  push:
+    branches: [main, feat/consent-core]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: synthetic-ci-password
+          POSTGRES_DB: ops_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ops_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:synthetic-ci-password@127.0.0.1:5432/ops_test
+      - run: npm pack --dry-run
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: node scripts/setup-env.mjs
+      - run: docker compose up --build -d --wait
+      - run: npm ci && npm run build
+      - run: node --env-file=.env dist/examples/receipt-and-marketing.js
+      - if: always()
+        run: docker compose down -v

@@ -12,9 +12,43 @@ OPS is an independent, open-source privacy platform being designed for builders 
 
 **Our intended foundation: free to use, self-hostable, API-first, and extensible.** Intended software license: Apache-2.0.
 
-> **Available now:** educational resources, a nine-question assessment, integration-level definitions, illustrative case studies, and a separate browser-local demo. **Not yet available:** installable production OPS packages, APIs, SDKs, connectors, or MCP. This repository remains README-only.
+> **Development alpha:** this branch now contains the first consent API, PostgreSQL ledger, and server-side TypeScript SDK. It records versioned choices and checks permission before a use. The website and browser-local demo remain separate. Complete Tier 1–3 packages, provider connectors, and OPS Guide/MCP are still ahead.
 
 **[Find your starting point](https://openprivacystandard.org/assessment/)** · **[Try the demo](https://demo.openprivacystandard.org/)** · **[Understand privacy architecture](https://openprivacystandard.org/architecture/)** · **[Help build OPS](https://github.com/brennandecker/open-privacy-standard/issues)**
+
+## Build with the first consent foundation
+
+The first working flow is deliberately concrete: **no marketing consent → blocked; grant → permitted; withdrawal → blocked again**. Historical retries cannot regrant permission, and changing purpose wording requires a fresh choice.
+
+```sh
+# Requirements: Node.js 24+, npm, Docker with Compose
+npm ci
+npm run build
+node scripts/setup-env.mjs
+docker compose up --build -d --wait
+node --env-file=.env dist/examples/receipt-and-marketing.js
+```
+
+The example uses synthetic identifiers and a simulated send callback. It does not contact an email provider. `.env` contains randomly generated server credentials; never ship them to a frontend. The API binds to `127.0.0.1:3000` and PostgreSQL data persists in a named volume. `docker compose down` stops the services without erasing that volume.
+
+```ts
+import { OpsClient } from '@open-privacy-standard/consent';
+
+const ops = new OpsClient({
+  baseUrl: process.env.OPS_URL!,
+  token: process.env.OPS_APP_TOKEN!,
+});
+
+// Your backend authenticates the customer and resolves their opaque ID.
+// A missing choice, refusal, withdrawal, changed purpose, or API failure blocks use.
+await ops.withPermission(customerId, 'marketing-email', async () => {
+  await sendPromotion(customerId);
+});
+```
+
+The SDK is packaged with the service source; it is **not published on npm**. Run `npm pack` after building and install the resulting tarball into a server-side example app. Imports above refer to that locally installed package.
+
+**[Read the API and ordering contract](docs/CONSENT_CONTRACT.md)** · **[See the working example](examples/receipt-and-marketing.ts)** · **[Follow the product milestones](docs/ROADMAP.md)**
 
 ## Start with your application
 
@@ -67,9 +101,9 @@ OPS Guide can help a builder implement any tier. It does not replace runtime enf
 | [Interactive demo](https://demo.openprivacystandard.org/) | Browser-local prototype with synthetic data and no production vendor connections |
 | Production Tier 1, 2, and 3 packages | **0/3 release grade for each:** no complete installable open-source tier released |
 | OPS Guide / MCP | Planned; no released endpoint |
-| This GitHub repository | Product definition in this README; implementation remains ahead |
+| This GitHub repository | Development alpha: consent API, PostgreSQL schema, server-side SDK, synthetic example, automated tests, and Docker configuration |
 
-The release scale is **0: absent · 1: published source · 2: installable alpha with tests · 3: supported release with documented validation**. Prototype interactions are not production software. Website and demo source are maintained separately from this repository.
+The release scale is **0: absent · 1: published source · 2: installable alpha with tests · 3: supported release with documented validation**. This foundation does not complete a tier. Website and demo source are maintained separately from this repository; their published scorecard tracks complete tier releases.
 
 ## Try the interactive demo
 
@@ -85,7 +119,7 @@ Explore three connected product experiences:
 
 **Try a complete workflow:** grant email permission in the preference center, run a permission check, withdraw permission, and check again. The second check is blocked, and the consent evidence records the change.
 
-The demo uses synthetic data and browser-local storage. It is a working interaction prototype, not the production platform. The hosted API, SDK, authenticated customer accounts, integrations, and production ledger remain planned. The demo and marketing website are maintained separately from this product repository.
+The demo uses synthetic data and browser-local storage. It is a working interaction prototype, not the production platform. The demo does not yet connect to the consent foundation in this repository; authenticated customer accounts and provider integrations remain ahead. The demo and marketing website are maintained separately from this product repository.
 
 ## Who this is for
 
@@ -135,31 +169,29 @@ Webhooks and adapters will help connected systems receive changes. Public tests 
 
 Plain-language regulatory guidance and an MCP server will support builders and their coding tools alongside that operational foundation.
 
-## A concrete example: booking without unwanted marketing
+## A concrete example: an e-receipt is not marketing consent
 
-A customer books an appointment and declines marketing emails.
+Alex gives an email address during a purchase to receive an e-receipt. Alex never agrees to promotional emails. The address exists in the business's customer records; the marketing choice is missing.
 
-In the intended OPS workflow:
+The implemented consent foundation:
 
-1. The application records the marketing choice against a defined purpose and notice version.
-2. OPS records the event and makes the effective preference available through the API.
-3. The marketing integration checks permission before using the customer's information for that purpose.
-4. If the customer later grants or withdraws permission, the effective state changes and integrations receive the update.
-5. The application can retrieve the evidence behind the decision and test that withdrawal stops the affected processing.
+1. Returns a blocked marketing decision while no choice is recorded.
+2. Records a separately collected grant against the exact purpose and notice version.
+3. Allows the application's guarded marketing operation after a fresh permission check.
+4. Records withdrawal and blocks the next guarded use.
+5. Preserves the original receipts while rejecting stale changes and conflicting retries.
 
-Booking-related processing is evaluated separately under its configured policy. Consent for one purpose must not silently become permission for another.
-
-This is an intended product experience, not a demonstration of software currently shipped.
+Receipt delivery is a separate use. This alpha evaluates consent-dependent purposes; it does not determine the policy or legal basis for transactional receipt delivery.
 
 ## What is available today—and what comes next
 
-**Current stage: planning and investigation. This repository contains only this README.**
+**Current stage: the first consent-service development alpha.** The SQL ledger, API, server-side SDK, and synthetic enforcement example are implemented. Local tests exercise state changes, evidence, purpose versions, tenant isolation, retries, and disk persistence using PGlite's PostgreSQL engine. The configured CI suite also targets PostgreSQL 17 and Docker Compose; passing local tests is not a claim that these deployment checks have completed.
 
-Documentation research now includes OneTrust and Ketch. REA tooling is installed. A bounded REA attempt inventoried Ketch's published JavaScript loader SDK, but semantic analysis was blocked by the execution environment. Direct SDK source inspection is recorded separately from REA evidence. Authorized runtime verification remains incomplete; no complete reverse-engineered platform or feature-parity result is claimed. No working consent engine, ledger, API, SDK, banner, preference center, admin console, or MCP server has been released.
+Next are the banner and script gating, authenticated preference center, admin console, and durable provider delivery. The foundation has not undergone a production security review or been published as a supported package. OPS Guide remains a separate planned product.
 
-The first adoption milestone is an independent developer installing OPS, collecting a choice, checking permission, withdrawing the choice, and proving that the application stops the affected processing—with traceable evidence.
+Documentation research includes OneTrust and Ketch. A bounded REA attempt inventoried Ketch's published JavaScript loader SDK, but semantic analysis was blocked by the execution environment. Direct inspection and original implementation are distinct from vendor runtime verification; no feature-parity or compatibility result is claimed.
 
-The public website is maintained separately. This repository is for the actual OPS platform, specifications, SDKs, and tests as they are developed.
+The public website is maintained separately. This repository contains the actual OPS implementation, contracts, SDK, and tests.
 
 ## Help shape the foundation
 
@@ -310,7 +342,7 @@ Every important decision should be traceable to the applicable purpose, policy v
 
 ## Licensing
 
-The intended software license is **Apache-2.0**. The full license and required notices will accompany the first code release.
+The software is licensed under **[Apache-2.0](LICENSE)**.
 
 Dependencies and reference projects require release-specific license review. Linked legislation, documentation, and third-party material retain their original status and terms.
 
